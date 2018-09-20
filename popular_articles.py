@@ -1,66 +1,76 @@
 
 import psycopg2, re
-# the logs table stores the visits themselves from the users. We need to count each distinct path and compile a most
-# visited list first.
+
+def get_popular_articles():
+    """
+    The logs table stores the visits themselves from the users. We need to count each distinct path and compile a list
+    of the most visited articles
+    :return: print the most popular articles
+    """
+    db = psycopg2.connect("dbname=news")
+    most_visited = counts_paths()
+    """ 
+    Using a string concatination in sql using the || operator to join articles.slug and log.path we are able to figure
+    out the names of the articles's names
+    """
+    cur = db.cursor()
+    # I found a website that makes sql commands that I type look professional like this one
+    # http://www.dpriver.com/pp/sqlformat.htm
+    cur.execute(
+        """
+            SELECT articles.title,
+                   Count(path)
+            FROM   log
+                   JOIN articles
+                     ON '/article/'
+                        || articles.slug = log.path
+            WHERE  log.path LIKE '/article/%'
+            GROUP  BY articles.title
+            ORDER  BY Count(path) DESC
+            LIMIT  3;  
+        """
+    )
+    rows = cur.fetchall()
+    for title, times in rows:
+        print("'{}' - {} visits.".format(title, times))
+    cur.close()
+    db.close()
 
 
-def counts_paths(print_visits=False):
+def get_popular_authors():
+    """
+    We take the join from earlier and join it to another table, this one is called authors, this join is pretty straight
+    forward and can be done with the authors.id = articles.author
+    :return:
+    """
     db = psycopg2.connect("dbname=news")
     cur = db.cursor()
     cur.execute(
         """
-        select path, count(path)
-        from log 
-        where path like '/article/%'
-        group by path 
-        order by count(path) desc 
-        limit 3;
+            SELECT authors.name,
+            Count(*)
+            FROM   ((articles
+                     join authors
+                       ON articles.author = authors.id)
+                    inner join log
+                            ON log.path = '/article/'
+                                          || articles.slug)
+            WHERE  log.path LIKE '/article/%'
+            GROUP  BY authors.name
+            ORDER  BY Count(path) DESC;  
         """
     )
-
     rows = cur.fetchall()
+    for r in rows:
+        print("'{}' - {} total visits.".format(r[0], r[1]))
     cur.close()
-    if print_visits:
-        print "\nRows: \n"
-        for row in rows:
-            print "{} was visited {} times".format(row[0], row[1])
     db.close()
-    return rows
-
-
-def get_popular_articles():
-    db = psycopg2.connect("dbname=news")
-    most_visited = counts_paths()
-    for article in most_visited:
-        # this line takes the article string from the path and extracts the critical part to search inside of the
-        # articles database
-        # re.search(r'/article/(.*)', "/article/candidate-is-jerk").groups()[0]
-        cur = db.cursor()
-        slug_to_search = re.search(r'/article/(.*)', article[0]).group(1)
-        cur.execute(
-            """
-                select articles.title, authors.name
-                from articles JOIN authors on (articles.author = authors.id)
-                where articles.slug = '{}';
-            """.format(slug_to_search)
-        )
-        title, author = cur.fetchall()[0]
-        print("'{}' by '{}' was visited {} times".format(title, author, article[1]))
 
 
 if __name__ == '__main__':
     get_popular_articles()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    print("____")
+    print("____")
+    get_popular_authors()
+    print("____")
+    print("____")
