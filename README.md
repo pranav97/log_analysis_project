@@ -7,6 +7,16 @@ just do the printing. The code itself is pretty short, execute the query and pri
 python popular_articles.py
 ```
 
+The output from the program is stored in ```output.txt```
+
+The sql file that was added to psql to get this program going is stored in ```newsdata.sql```
+
+*can not store in git because its too large sorry
+
+This data is not owned by me but by Udacity. I only used it to learn about joins, subqueries and other psql intricacies. 
+
+This is how I solved the questions in this question set.
+
 
 #### Q1. What are the most popular three articles of all time? 
 
