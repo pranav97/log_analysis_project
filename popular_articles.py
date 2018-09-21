@@ -10,8 +10,8 @@ def get_popular_articles():
     """
     db = psycopg2.connect("dbname=news")
     """
-    Using a string concatenation in sql using the || operator to join 
-    articles.slug and log.path we are able to figure out the names of the 
+    Using a string concatenation in sql using the || operator to join
+    articles.slug and log.path we are able to figure out the names of the
     articles's names
     """
     cur = db.cursor()
@@ -29,7 +29,7 @@ def get_popular_articles():
             WHERE  log.path LIKE '/article/%'
             GROUP  BY articles.title
             ORDER  BY Count(path) DESC
-            LIMIT  3;  
+            LIMIT  3;
         """
     )
     rows = cur.fetchall()
@@ -60,7 +60,7 @@ def get_popular_authors():
                                           || articles.slug)
             WHERE  log.path LIKE '/article/%'
             GROUP  BY authors.name
-            ORDER  BY Count(path) DESC;  
+            ORDER  BY Count(path) DESC;
         """
     )
     rows = cur.fetchall()
