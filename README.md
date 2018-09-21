@@ -8,7 +8,6 @@ python popular_articles.py
 ```
 
 
-
 #### Q1. What are the most popular three articles of all time? 
 
 Steps to get the best articles:
@@ -21,4 +20,12 @@ Steps to get the best authors:
 1) Look at the logs, and aggregate over the author using another join on the authors table from the previous query
 2) Join to the authors table on the authors tables id to get the author's name
 
-#### Q3.
+#### Q3. On which days did more than 1% of requests lead to errors? 
+
+Steps to get the days
+1) Use date(time) to find out the date that they are talking about
+2) group by date and then by status code
+3) make sure that the number of errors are greater than 1%
+
+There are 3 subqueries in the last one, might not be the best way to solve it but it definitely works.
+

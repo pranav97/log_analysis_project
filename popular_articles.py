@@ -1,5 +1,6 @@
 
-import psycopg2, re
+import psycopg2
+
 
 def get_popular_articles():
     """
@@ -8,9 +9,8 @@ def get_popular_articles():
     :return: print the most popular articles
     """
     db = psycopg2.connect("dbname=news")
-    most_visited = counts_paths()
     """ 
-    Using a string concatination in sql using the || operator to join articles.slug and log.path we are able to figure
+    Using a string concatenation in sql using the || operator to join articles.slug and log.path we are able to figure
     out the names of the articles's names
     """
     cur = db.cursor()
@@ -67,10 +67,57 @@ def get_popular_authors():
     db.close()
 
 
+def get_error_days():
+    """
+    This function will
+    :return:
+    """
+    db = psycopg2.connect("dbname=news")
+    cur = db.cursor()
+
+    # inner most query gets the total
+    # 2nd inner most query gets the error rate every single day
+    # last select is just filetering the error rate by the 1.00% threshold
+    cur.execute(
+        """
+            SELECT To_char(day, 'Month DD, YYYY'),
+                Cast (failrate AS DECIMAL(10,2))
+            FROM   (SELECT totaltable.total,
+                           Count(status)
+                           AS
+                                  failed,
+                           Date(time)
+                           AS day,
+                           ( ( Cast (Count(status) AS DECIMAL) / totaltable.total ) * 100 )
+                           AS
+                                  failrate
+                    FROM   log
+                           JOIN (SELECT Count(Date(time)) AS total,
+                                        Date(time)        AS day
+                                 FROM   log
+                                 GROUP  BY Date(time)) AS totaltable
+                             ON totaltable.day = Date(time)
+                    WHERE  status = '404 NOT FOUND'
+                    GROUP  BY Date(time),
+                              status,
+                              totaltable.total) AS failtable
+            WHERE  failrate > 1.0;
+        """
+    )
+    rows = cur.fetchall()
+    for r in rows:
+        print("{} - {}% error ".format(r[0], r[1]))
+    cur.close()
+    db.close()
+
+
 if __name__ == '__main__':
     get_popular_articles()
     print("____")
     print("____")
     get_popular_authors()
+    print("____")
+    print("____")
+    get_error_days()
     print("____")
     print("____")
