@@ -1,4 +1,4 @@
-
+#!/usr/bin/python
 import psycopg2
 
 
@@ -34,7 +34,7 @@ def get_popular_articles():
     )
     rows = cur.fetchall()
     for title, times in rows:
-        print("'{}' - {} visits.".format(title, times))
+        print "'{}' - {} visits.".format(title, times)
     cur.close()
     db.close()
 
@@ -65,7 +65,7 @@ def get_popular_authors():
     )
     rows = cur.fetchall()
     for r in rows:
-        print("'{}' - {} total visits.".format(r[0], r[1]))
+        print "'{}' - {} total visits.".format(r[0], r[1])
     cur.close()
     db.close()
 
@@ -110,18 +110,18 @@ def get_error_days():
     )
     rows = cur.fetchall()
     for r in rows:
-        print("{} - {}% error ".format(r[0], r[1]))
+        print "{} - {}% error ".format(r[0], r[1])
     cur.close()
     db.close()
 
 
 if __name__ == '__main__':
     get_popular_articles()
-    print("____")
-    print("____")
+    print "____"
+    print "____"
     get_popular_authors()
-    print("____")
-    print("____")
+    print "____"
+    print "____"
     get_error_days()
-    print("____")
-    print("____")
+    print "____"
+    print "____"
