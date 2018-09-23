@@ -1,17 +1,57 @@
-### log_analysis_project
-
+log_analysis_project
+-
 I wrote all the code in the same file. The point of the project is to make psql do all the heavy lifting and let python 
 just do the printing. The code itself is pretty short, execute the query and print the result. 
+
+#### Details about the project
+The database is a PostgreSQL database for a fictional news website. 
+
+The tables in this project are:
+- articles - The articles table has all the articles texts and the title and an
+author number which is looked up in the authors database.
+- authors - The authors table describes the names of the authors and has a 
+foreign key of authors.id with the articles table.
+- logs - Some of the "hits" were status 200 - Ok and the others were errors 
+404\. The goal of the last question was the find the percent of successful 
+"hits".
+
+
+Running instructions:
+-
+
+### Requirements
+
+
+- If you already have psql installed.
+
+
+1. Python2.*
+2. PostgreSQL
+3. psycopg2
+
+This link over [here](https://d17h27t6h515a5.cloudfront.net/topher/2016/August/57b5f748_newsdta/newsdata.zip)
+will take you to a zipped version of the file. Unzip this.
+
+From the command line, navigate to the directory containing newsdata.sql.
+Import the schema and data in newsdata.sql to the news database by typing: psql -d news -f newsdata.sql
+ 
+- If you don't have psql and would like to give vagrant a try or have that you 
+can also use the vagrant file (to automatically acquire the database
+and the dependencies for this which is just psycopg2 which is the database api
+that I have used here and python2.*)
+1. Vagrant
+2. VirtualBox
+
+###Running Instructions
 ```
-# Running instructions:
 python popular_articles.py
 ```
 
 The output from the program is stored in ```output.txt```
 
-The sql file that was added to psql to get this program going is stored in ```newsdata.sql```
-
-*can not store in git because its too large sorry
+The sql file that was added to psql to get this program going is stored in 
+```newsdata.sql``` which can be unzipped from the download from the link 
+above. Or from the vagrant file that I have provided in this repo.
 
 This data is not owned by me but by Udacity. I only used it to learn about joins, subqueries and other psql intricacies. 
 
